@@ -5,9 +5,6 @@ import Column from "./models/Column.js"
 import ColumnOrder from './models/ColumnOrder.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import cardRouter from "./routes/card.routes.js"
-import columnRouter from "./routes/column.routes.js"
-import columnOrderRouter from "./routes/columnOrder.routes.js"
 
 dotenv.config()
 db();
@@ -35,9 +32,115 @@ app.get('/api/kanban/board', async (req, res) => {
         });
     }
 })
-app.use('/api/kanban/cards', cardRouter)
-app.use('/api/kanban/columns', columnRouter)
-app.use('/api/kanban/columnOrder', columnOrderRouter)
+
+//card --------------------------------------------------------------
+app.post('/api/kanban/cards/new', async (req, res) => {
+    const { card, columnId } = req.body
+    try {
+        let newCard = await new Card(card).save()
+        await Column.findByIdAndUpdate(columnId, {
+            $push: { cardIds: newCard.id }
+        })
+        res.send({ newCard })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+app.delete("/api/kanban/cards/delete", async (req, res) => {
+    const { cardId, columnId } = req.body
+    try {
+        await Card.findByIdAndDelete(cardId)
+        await Column.findByIdAndUpdate(columnId, {
+            $pull: { cardIds: cardId }
+        })
+        res.send({ msg: "deleted" })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+
+//colmns -------------------------------------------------------------------
+app.post("/api/kanban/columns/new", async (req, res) => {
+    const { name } = req.body
+    try {
+        let column = await new Column({
+            name
+        }).save()
+        res.send({ column })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+
+app.post("/api/kanban/columns/update", async (req, res) => {
+    const { columnId, updateColumn } = req.body
+    try {
+        let column = await Column.findByIdAndUpdate(columnId, updateColumn)
+        res.send({ column })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+app.patch("/api/kanban/columns/update", async (req, res) => {
+    const { columns } = req.body
+    try {
+        for (let key in columns) {
+            await Column.findByIdAndUpdate(key, {
+                $set: { cardIds: columns[key].cardIds }
+            })
+        }
+        res.send({ msg: "updated" })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+
+app.delete("/api/kanban/columns/delete", async (req, res) => {
+    const { columnId } = req.body
+    try {
+        await Column.findByIdAndDelete(columnId)
+        res.send({ columnId })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+
+// ColumnOrder----------------------------------------------------------
+app.post("/api/kanban/columnOrder/new", async (req, res) => {
+    const { newColumnOrder } = req.body
+    console.log(newColumnOrder)
+    try {
+        let order = await ColumnOrder.updateOne({ orderId: 1 }, { columnOrder: newColumnOrder }, { upsert: true })
+        res.send({ order })
+    } catch (error) {
+        res.status(error.code || 500).json({
+            message: error.message,
+            error: error,
+        });
+    }
+});
+
+// app.use('/api/kanban/cards', cardRouter)
+// app.use('/api/kanban/columns', columnRouter)
+// app.use('/api/kanban/columnOrder', columnOrderRouter)
 
 app.use((error, req, res, next) => {
     console.log(error);
