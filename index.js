@@ -4,10 +4,13 @@ import Card from "./models/Card.js"
 import Column from "./models/Column.js"
 import ColumnOrder from './models/ColumnOrder.js'
 import dotenv from 'dotenv'
+import cors from 'cors'
+
 dotenv.config()
 db();
 
 const app = express()
+app.use(cors());
 app.use(express.json())
 
 app.get('/api/kanban/board', async (req, res) => {
