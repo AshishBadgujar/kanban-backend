@@ -1,6 +1,7 @@
 import express from 'express'
 import Card from '../models/Card.js';
 import Column from '../models/Column.js';
+import cors from 'cors'
 const router = express.Router();
 
 router.post("/new", async (req, res) => {

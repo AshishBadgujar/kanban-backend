@@ -5,6 +5,9 @@ import Column from "./models/Column.js"
 import ColumnOrder from './models/ColumnOrder.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import cardRouter from "./routes/card.routes.js"
+import columnRouter from "./routes/column.routes.js"
+import columnOrderRouter from "./routes/columnOrder.routes.js"
 
 dotenv.config()
 db();
@@ -32,11 +35,6 @@ app.get('/api/kanban/board', async (req, res) => {
         });
     }
 })
-
-import cardRouter from "./routes/card.routes.js"
-import columnRouter from "./routes/column.routes.js"
-import columnOrderRouter from "./routes/columnOrder.routes.js"
-
 app.use('/api/kanban/cards', cardRouter)
 app.use('/api/kanban/columns', columnRouter)
 app.use('/api/kanban/columnOrder', columnOrderRouter)
