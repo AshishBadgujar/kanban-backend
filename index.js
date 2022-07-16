@@ -19,8 +19,8 @@ app.get('/api/kanban/board', async (req, res) => {
         }
         board.cards = await Card.find()
         board.columns = await Column.find()
-        let data = await ColumnOrder.findOne({ orderId: 1 })
-        board.columnOrder = data.columnOrder
+        let data = await ColumnOrder.find()
+        board.columnOrder = data[0]?.columnOrder || []
         res.send({ board })
     } catch (error) {
         res.status(error.code || 500).json({
