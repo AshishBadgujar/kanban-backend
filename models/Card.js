@@ -5,18 +5,6 @@ const CardSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
-    },
-    description: {
-        type: String,
-        required: false
-    },
-    priority: {
-        type: String,
-        enum: ['low', 'medium', 'hight']
-    },
-    completed: {
-        type: Boolean,
-        default: false
     }
 })
 

@@ -72,6 +72,7 @@ app.post("/api/kanban/columns/new", async (req, res) => {
         let column = await new Column({
             name
         }).save()
+        await ColumnOrder.updateOne({ orderId: 1 }, { $push: { columnOrder: column.id } }, { upsert: true })
         res.send({ column })
     } catch (error) {
         res.status(error.code || 500).json({
@@ -114,6 +115,9 @@ app.delete("/api/kanban/columns/delete", async (req, res) => {
     const { columnId } = req.body
     try {
         await Column.findByIdAndDelete(columnId)
+        await ColumnOrder.updateOne({ orderId: 1 }, {
+            $pull: { columnOrder: columnId }
+        })
         res.send({ columnId })
     } catch (error) {
         res.status(error.code || 500).json({
@@ -126,7 +130,6 @@ app.delete("/api/kanban/columns/delete", async (req, res) => {
 // ColumnOrder----------------------------------------------------------
 app.post("/api/kanban/columnOrder/new", async (req, res) => {
     const { newColumnOrder } = req.body
-    console.log(newColumnOrder)
     try {
         let order = await ColumnOrder.updateOne({ orderId: 1 }, { columnOrder: newColumnOrder }, { upsert: true })
         res.send({ order })
