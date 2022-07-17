@@ -49,21 +49,6 @@ app.post('/api/kanban/cards/new', async (req, res) => {
         });
     }
 });
-app.delete("/api/kanban/cards/delete", async (req, res) => {
-    const { cardId, columnId } = req.body
-    try {
-        await Card.findByIdAndDelete(cardId)
-        await Column.findByIdAndUpdate(columnId, {
-            $pull: { cardIds: cardId }
-        })
-        res.send({ msg: "deleted" })
-    } catch (error) {
-        res.status(error.code || 500).json({
-            message: error.message,
-            error: error,
-        });
-    }
-});
 
 //colmns -------------------------------------------------------------------
 app.post("/api/kanban/columns/new", async (req, res) => {
@@ -114,9 +99,12 @@ app.patch("/api/kanban/columns/update", async (req, res) => {
 app.delete("/api/kanban/columns/delete", async (req, res) => {
     const { columnId } = req.body
     try {
-        await Column.findByIdAndDelete(columnId)
+        let column = await Column.findByIdAndDelete(columnId)
         await ColumnOrder.updateOne({ orderId: 1 }, {
             $pull: { columnOrder: columnId }
+        })
+        column.cardIds.map(async (cardId) => {
+            await Card.findByIdAndDelete(cardId)
         })
         res.send({ columnId })
     } catch (error) {
