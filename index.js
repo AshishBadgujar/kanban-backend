@@ -13,9 +13,7 @@ const app = express()
 app.use(express.json())
 app.use(cors({
     origin: "*",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
-    origin: true,
 }));
 
 app.get('/api/kanban/board', async (req, res) => {
