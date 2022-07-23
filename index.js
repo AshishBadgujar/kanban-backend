@@ -10,16 +10,9 @@ dotenv.config()
 db();
 
 const app = express()
-app.use(cors());
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", '*');
-    res.header("Access-Control-Allow-Credentials", true);
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
-    next();
-});
 app.use(express.json())
 
+app.use(cors());
 app.get('/api/kanban/board', async (req, res) => {
     try {
         let board = {
@@ -41,6 +34,7 @@ app.get('/api/kanban/board', async (req, res) => {
 })
 
 //card --------------------------------------------------------------
+app.use(cors());
 app.post('/api/kanban/cards/new', async (req, res) => {
     const { card, columnId } = req.body
     try {
@@ -58,6 +52,7 @@ app.post('/api/kanban/cards/new', async (req, res) => {
 });
 
 //colmns -------------------------------------------------------------------
+app.use(cors());
 app.post("/api/kanban/columns/new", async (req, res) => {
     const { name } = req.body
     try {
@@ -74,6 +69,7 @@ app.post("/api/kanban/columns/new", async (req, res) => {
     }
 });
 
+app.use(cors());
 app.post("/api/kanban/columns/update", async (req, res) => {
     const { columnId, updateColumn } = req.body
     try {
@@ -86,6 +82,8 @@ app.post("/api/kanban/columns/update", async (req, res) => {
         });
     }
 });
+
+app.use(cors());
 app.patch("/api/kanban/columns/update", async (req, res) => {
     const { columns } = req.body
     try {
@@ -103,6 +101,7 @@ app.patch("/api/kanban/columns/update", async (req, res) => {
     }
 });
 
+app.use(cors());
 app.delete("/api/kanban/columns/delete", async (req, res) => {
     const { columnId } = req.body
     try {
@@ -123,6 +122,7 @@ app.delete("/api/kanban/columns/delete", async (req, res) => {
 });
 
 // ColumnOrder----------------------------------------------------------
+app.use(cors());
 app.post("/api/kanban/columnOrder/new", async (req, res) => {
     const { newColumnOrder } = req.body
     try {
@@ -136,10 +136,7 @@ app.post("/api/kanban/columnOrder/new", async (req, res) => {
     }
 });
 
-// app.use('/api/kanban/cards', cardRouter)
-// app.use('/api/kanban/columns', columnRouter)
-// app.use('/api/kanban/columnOrder', columnOrderRouter)
-
+app.use(cors());
 app.use((error, req, res, next) => {
     console.log(error);
 
